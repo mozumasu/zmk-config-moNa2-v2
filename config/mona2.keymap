@@ -92,7 +92,7 @@
 &trans          &trans                  &trans          &trans                   &trans   &trans    &trans  &trans                                                         &trans
             >;
 
-            sensor-bindings = <&inc_dec_kp LC(C_VOLUME_UP) C_VOLUME_DOWN>;
+            sensor-bindings = <&inc_dec_kp C_VOLUME_UP C_VOLUME_DOWN>;
         };
 
         layer_4 {
@@ -103,7 +103,7 @@
 &trans  &trans  &trans  &trans  &trans  &trans    &trans       &trans                                                  &bt BT_CLR_ALL
             >;
 
-            sensor-bindings = <&inc_dec_kp LC(C_BRI_UP) C_BRI_DN>;
+            sensor-bindings = <&inc_dec_kp C_BRI_UP C_BRI_DN>;
         };
 
         MOUSE {
