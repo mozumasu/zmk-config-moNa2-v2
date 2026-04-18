@@ -20,7 +20,12 @@
 include:
   - board: seeeduino_xiao_ble
     shield: mona2_r rgbled_adapter
-    snippet: studio-rpc-usb-uart
+    snippet: "trackball;studio-rpc-usb-uart"
+    artifact-name: mona2_r-trackball
+  - board: seeeduino_xiao_ble
+    shield: mona2_r rgbled_adapter
+    snippet: "trackpad;studio-rpc-usb-uart"
+    artifact-name: mona2_r-trackpad
   - board: seeeduino_xiao_ble
     shield: mona2_l rgbled_adapter
   - board: seeeduino_xiao_ble

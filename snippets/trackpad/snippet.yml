@@ -1,0 +1,4 @@
+name: trackpad
+append:
+  EXTRA_DTC_OVERLAY_FILE: trackpad.overlay
+  EXTRA_CONF_FILE: trackpad.conf

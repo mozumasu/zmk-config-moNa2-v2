@@ -1,0 +1,58 @@
+#include <input/processors.dtsi>
+#include <dt-bindings/zmk/input_transform.h>
+#include <zephyr/dt-bindings/input/input-event-codes.h>
+
+
+&pinctrl {
+    i2c1_default: i2c1_default {    //通常時(I2C通信中)のピン構成
+        group1 {
+            psels = <NRF_PSEL(TWIM_SDA, 0, 4)>,  //P0.04を指定(SDA, SPIのSDIOと同じ物理ピン)
+                    <NRF_PSEL(TWIM_SCL, 0, 5)>;  //P0.05を指定(SCL, SPIのSCKと同じ物理ピン)
+        };
+    };
+
+    i2c1_sleep: i2c1_sleep {    //スリープ時のピン構成(省電力)
+        group1 {
+            psels = <NRF_PSEL(TWIM_SDA, 0, 4)>,
+                    <NRF_PSEL(TWIM_SCL, 0, 5)>;
+            low-power-enable;
+        };
+    };
+};
+
+
+&i2c1 {
+    status = "okay";
+    compatible = "nordic,nrf-twim";
+    pinctrl-0 = <&i2c1_default>;
+    pinctrl-1 = <&i2c1_sleep>;
+    pinctrl-names = "default", "sleep";
+    clock-frequency = <I2C_BITRATE_FAST>;
+    zephyr,concat-buf-size = <32>;
+
+    trackpad: trackpad@56 {
+        status = "okay";
+        compatible = "azoteq,iqs7211e";
+        reg = <0x56>;
+        irq-gpios = <&gpio0 2 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>; //P0.02を指定(RDY, トラックボールのIRQと同じ物理ピン)
+        /* power-gpios = <&gpio0 9 GPIO_ACTIVE_HIGH>;  // P0.09 (SPI CS ピン流用), 必要に応じて有効化 */
+    };
+};
+
+
+/ {
+    trackpad_listener: trackpad_listener {
+        compatible = "zmk,input-listener";
+        status = "okay";
+        device = <&trackpad>;
+        input-processors =
+            <&zip_temp_layer 5 300>;                              //オートマウスレイヤーの選択
+
+        scroller {
+            layers = <3>;
+            input-processors =
+                <&zip_xy_to_scroll_mapper>,                         //スクロールモードに変更
+                <&zip_scroll_scaler 1 10>;                          //スクロール量を1/10倍
+        };
+    };
+};
