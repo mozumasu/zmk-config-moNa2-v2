@@ -25,6 +25,26 @@
         tap-ms = <20>;
         track_remainders;
     };
+
+    // トラックボールの動きをスクロールキーに離散化する (drift 抑制版)
+    //   tick=30   : 30カウント蓄積で1段スクロール (連続感は zip_scroll_scaler 1/30 と同等)
+    //   threshold=3 : ±2以下のdrift微小値を完全に切り捨てる
+    //   mode=1   : 4方向（X/Y いずれか強い方だけ発火）
+    zip_keybind_scroll: zip_keybind_scroll {
+        compatible = "zmk,input-processor-keybind";
+        #input-processor-cells = <0>;
+        bindings =
+            <&msc SCRL_LEFT>,   // X+ : 左スクロール (X反転で右に動かしたら左)
+            <&msc SCRL_RIGHT>,  // X- : 右スクロール
+            <&msc SCRL_DOWN>,   // Y+ : 下スクロール
+            <&msc SCRL_UP>;     // Y- : 上スクロール
+        mode = <1>;
+        tick = <30>;
+        threshold = <3>;
+        wait-ms = <0>;
+        tap-ms = <20>;
+        track_remainders;
+    };
 };
 
 
@@ -93,14 +113,14 @@
     status = "okay";
     device = <&trackball_central>;
 
+    // Layer 3: トラックボールでスクロール (tick方式でドリフト抑制)
+    //   zip_keybind_scroll で連続スクロールを離散化し、threshold=3でdriftをカット
+    //   zip_xy_scaler 0 1 でXYポインタ移動を無効化（スクロール専用に）
     scroller {
         layers = <3>;
         input-processors =
-            // <&zip_xy_transform INPUT_TRANSFORM_XY_SWAP>,        //X軸とY軸の入れ替え
-            <&zip_xy_transform INPUT_TRANSFORM_X_INVERT>,       //X軸反転
-            <&zip_xy_to_scroll_mapper>,                         //スクロールモードに変更
-            <&zip_scroll_transform INPUT_TRANSFORM_X_INVERT>,   //スクロールのX軸反転
-            <&zip_scroll_scaler 1 30>;                          //スクロール量を1/30倍
+            <&zip_keybind_scroll>,
+            <&zip_xy_scaler 0 1>;
     };
 
     // Layer 6 (/-hold): トラックボール上下でズームイン/アウト
