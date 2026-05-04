@@ -30,6 +30,7 @@
     // トラックボールの動きをスクロールキーに離散化する (drift 抑制版)
     //   tick=30   : 30カウント蓄積で1段スクロール (連続感は zip_scroll_scaler 1/30 と同等)
     //   threshold=3 : ±2以下のdrift微小値を完全に切り捨てる
+    //   wait-ms=40 : 連続発火の最小間隔40ms (上限25Hz、高速回転時のオーバーシュート抑制)
     //   mode=1   : 4方向（X/Y いずれか強い方だけ発火）
     zip_keybind_scroll: zip_keybind_scroll {
         compatible = "zmk,input-processor-keybind";
@@ -42,7 +43,7 @@
         mode = <1>;
         tick = <30>;
         threshold = <3>;
-        wait-ms = <0>;
+        wait-ms = <40>;
         tap-ms = <20>;
         track_remainders;
     };
