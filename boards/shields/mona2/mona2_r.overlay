@@ -27,6 +27,17 @@
         track_remainders;
     };
 
+    // remainderを蓄積しない scaler (driftのような連続微小値を確実に 0 化する)
+    //   標準 zip_xy_scaler は track-remainders 有効で、±1 が連続すると累積で
+    //   出力されてしまうため drift の暴走を抑えきれない。track-remainders を
+    //   付けないことで、整数除算の余りは毎回捨てる挙動になる。
+    zip_xy_drop: zip_xy_drop {
+        compatible = "zmk,input-processor-scaler";
+        #input-processor-cells = <2>;
+        type = <INPUT_EV_REL>;
+        codes = <INPUT_REL_X>, <INPUT_REL_Y>;
+    };
+
     // トラックボールの動きをスクロールキーに離散化する (drift 抑制版)
     //   tick=30   : 30カウント蓄積で1段スクロール (連続感は zip_scroll_scaler 1/30 と同等)
     //   threshold=3 : ±2以下のdrift微小値を完全に切り捨てる
@@ -119,17 +130,17 @@
 
     // Layer 3: トラックボールでスクロール
     //   連続変換 (zip_xy_to_scroll_mapper) を使い、drift は前段の
-    //   zip_xy_scaler でデッドゾーン化して吸収する。
+    //   zip_xy_drop (remainder無蓄積) で完全にデッドゾーン化する。
     //
-    //   zip_xy_scaler 1 6 の効果: 入力 1/6 倍 (整数演算で切り捨て)
-    //     ±1〜±5 → 0 (drift をほぼ全カット、ログ統計で出ていた±5まで対応)
+    //   zip_xy_drop 1 6 の効果: 入力 1/6 倍 (整数演算で切り捨て、累積なし)
+    //     ±1〜±5 → 毎回 0 (drift を確実に全カット、累積で漏れない)
     //     ±6 → 1, ±12 → 2, ±18 → 3 (通常motionは通す)
     //   zip_scroll_scaler 1 5 で更に 1/5、合計 1/30 で元と同じ感度
     scroller {
         layers = <3>;
         input-processors =
             <&zip_xy_transform INPUT_TRANSFORM_X_INVERT>,
-            <&zip_xy_scaler 1 6>,
+            <&zip_xy_drop 1 6>,
             <&zip_xy_to_scroll_mapper>,
             <&zip_scroll_transform INPUT_TRANSFORM_X_INVERT>,
             <&zip_scroll_scaler 1 5>;
