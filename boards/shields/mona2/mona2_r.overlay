@@ -32,14 +32,16 @@
     //   threshold=3 : ±2以下のdrift微小値を完全に切り捨てる
     //   wait-ms=40 : 連続発火の最小間隔40ms (上限25Hz、高速回転時のオーバーシュート抑制)
     //   mode=1   : 4方向（X/Y いずれか強い方だけ発火）
+    // ※切り分け中: bindings を &msc から &kp に置き換え。zip_keybind 経由で
+    //   &msc が発火しない可能性を確認するため、PageDown/PageUp で代替。
     zip_keybind_scroll: zip_keybind_scroll {
         compatible = "zmk,input-processor-keybind";
         #input-processor-cells = <0>;
         bindings =
-            <&msc SCRL_LEFT>,   // X+ : 左スクロール (X反転で右に動かしたら左)
-            <&msc SCRL_RIGHT>,  // X- : 右スクロール
-            <&msc SCRL_DOWN>,   // Y+ : 下スクロール
-            <&msc SCRL_UP>;     // Y- : 上スクロール
+            <&none>,            // X+ : 未使用 (横スクロール対応はあとで)
+            <&none>,             // X- : 未使用
+            <&kp PAGE_DOWN>,    // Y+ : 下スクロール
+            <&kp PAGE_UP>;      // Y- : 上スクロール
         mode = <1>;
         tick = <30>;
         threshold = <3>;
