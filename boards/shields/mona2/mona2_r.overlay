@@ -117,12 +117,11 @@
 
     // Layer 3: トラックボールでスクロール (tick方式でドリフト抑制)
     //   zip_keybind_scroll で連続スクロールを離散化し、threshold=3でdriftをカット
-    //   zip_xy_scaler 0 1 でXYポインタ移動を無効化（スクロール専用に）
+    //   ※ zip_xy_scaler 0 1 (ポインタ無効化) を入れると scroll が反応しなくなる事象あり、一旦外す
     scroller {
         layers = <3>;
         input-processors =
-            <&zip_keybind_scroll>,
-            <&zip_xy_scaler 0 1>;
+            <&zip_keybind_scroll>;
     };
 
     // Layer 6 (/-hold): トラックボール上下でズームイン/アウト
