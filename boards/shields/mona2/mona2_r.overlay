@@ -117,13 +117,24 @@
     status = "okay";
     device = <&trackball_central>;
 
-    // Layer 3: トラックボールでスクロール (tick方式でドリフト抑制)
-    //   zip_keybind_scroll で連続スクロールを離散化し、threshold=3でdriftをカット
-    //   ※ zip_xy_scaler 0 1 (ポインタ無効化) を入れると scroll が反応しなくなる事象あり、一旦外す
+    // Layer 3: トラックボールでスクロール
+    //   zip_keybind_scroll 経由で &msc を呼ぶと Slack/wezterm 等のアプリで効かない
+    //   (zip_keybind が &msc を正しく発火しない or HID 経路が通らない) ため、
+    //   連続変換 (zip_xy_to_scroll_mapper) に戻し、drift カットは前段の
+    //   zip_xy_scaler 1 4 で代替する。
+    //
+    //   zip_xy_scaler 1 4 の効果: 入力 1/4 倍 (整数演算で切り捨て)
+    //     ±1 → 0, ±2 → 0, ±3 → 0 (drift の大半をカット)
+    //     ±4 → 1, ±10 → 2, ±20 → 5 (通常motionは通す)
+    //   zip_scroll_scaler 1 8 で更に 1/8、合計 1/32 で元の 1/30 とほぼ同等
     scroller {
         layers = <3>;
         input-processors =
-            <&zip_keybind_scroll>;
+            <&zip_xy_transform INPUT_TRANSFORM_X_INVERT>,
+            <&zip_xy_scaler 1 4>,
+            <&zip_xy_to_scroll_mapper>,
+            <&zip_scroll_transform INPUT_TRANSFORM_X_INVERT>,
+            <&zip_scroll_scaler 1 8>;
     };
 
     // Layer 6 (/-hold): トラックボール上下でズームイン/アウト
