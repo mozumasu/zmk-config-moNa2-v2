@@ -21,6 +21,9 @@ config SPI
 config PMW3610
     default y
 
+config PAW3222
+    default y
+
 endif
 
 if SHIELD_MONA2_R || SHIELD_MONA2_L

@@ -2,6 +2,11 @@
 #include <input/processors.dtsi>
 #include <dt-bindings/zmk/input_transform.h>
 #include <physical_layouts.dtsi>
+/* NOTE: <input/processors/runtime-input-processor.dtsi> は最終的に
+   modifiers.h を引き込み RC(keycode) を 1 引数で再定義するため、
+   このファイル内のマトリクス RC(row,col) と衝突する。
+   そのため runtime-input-processor.dtsi は overlay 側で
+   `#include "mona2.dtsi"` の後に include すること。 */
 
 / {
     chosen {
@@ -99,18 +104,19 @@
     trackball_central_listener: trackball_central_listener {
         compatible = "zmk,input-listener";
         status = "disabled";
-        input-processors =
-            <&zip_xy_transform INPUT_TRANSFORM_Y_INVERT>,         //Y軸反転
-            //<&zip_xy_transform INPUT_TRANSFORM_XY_SWAP>,        //X軸とY軸の入れ替え
-            //<&zip_xy_transform INPUT_TRANSFORM_X_INVERT>,       //X軸反転
-            <&mouse_temp_layer 5 500>;                            //オートマウスレイヤー(タイムアウト500ms)
+        /* DYA Studio で動的に編集できるよう、入力プロセッサは
+           overlay 側で &mouse_runtime_input_processor /
+           &scroll_runtime_input_processor へ委譲する。
+           ローカルカスタマイズ (overlay で設定):
+             - Y軸反転: &zip_xy_transform INPUT_TRANSFORM_Y_INVERT
+             - オートマウスレイヤー: &mouse_temp_layer 5 500 */
     };
 
     left_encoder: encoder_left {
         compatible = "alps,ec11";
         a-gpios = <&xiao_d 5 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
         b-gpios = <&xiao_d 0 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
-        steps = <24>;
+        steps = <96>;
         status = "disabled";
     };
 
@@ -121,7 +127,7 @@
     sensors: sensors {
         compatible = "zmk,keymap-sensors";
         sensors = <&left_encoder &right_encoder>;
-        triggers-per-rotation = <10>;
+        triggers-per-rotation = <24>;
     };
 
 };
