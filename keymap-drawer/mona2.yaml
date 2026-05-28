@@ -516,8 +516,3 @@ layers:
   - {t: ▽, type: trans}
   - '&bootloader'
   - BT CLR ALL
-combos:
-- p: [39, 38]
-  k: {t: ESC, h: MOUSE_W}
-- p: [11, 12]
-  k: TAB
