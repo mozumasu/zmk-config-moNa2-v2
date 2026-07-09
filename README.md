@@ -1,9 +1,18 @@
+## Keymap
+
+![moNa2 keymap](keymap-drawer/mona2.svg)
+
+`config/mona2.keymap` の変更を push すると GitHub Actions ([draw-keymaps.yml](.github/workflows/draw-keymaps.yml)) が上図を自動更新します。
+
+## COROPIT
+
 COROPITを使用する方は以下のようにコードを編集してください。
 
 mona2_r.overlay
 
 修正前
-```
+
+```text
   trackball_central: trackball_central@0 {
         status = "okay";
         compatible = "pixart,pmw3610";  //トラボセンサ用のドライバとバインド
@@ -21,8 +30,10 @@ mona2_r.overlay
 };
 
 ```
+
 **修正後**
-```
+
+```text
   trackball_central: trackball_central@0 {
         status = "okay";
         compatible = "pixart,pmw3610";  //トラボセンサ用のドライバとバインド
